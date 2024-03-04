@@ -110,7 +110,7 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.opt.clipboard = 'unnamedplus'
+-- vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -154,6 +154,12 @@ vim.opt.scrolloff = 10
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Show column
+vim.opt.colorcolumn = '120'
+
+-- Custom Remaps
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Open netrw:' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -242,13 +248,37 @@ require('lazy').setup {
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
+      -- signs = {
+      --   add = { text = '+' },
+      --   change = { text = '~' },
+      --   delete = { text = '_' },
+      --   topdelete = { text = '‾' },
+      --   changedelete = { text = '~' },
+      -- },
+      on_attach = function(buffer)
+        local gs = package.loaded.gitsigns
+
+        local function map(mode, l, r, desc)
+          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+        end
+
+        map('n', ']h', gs.next_hunk, 'Next Hunk')
+        map('n', '[h', gs.prev_hunk, 'Prev Hunk')
+        map({ 'n', 'v' }, '<leader>ghs', ':Gitsigns stage_hunk<CR>', 'Stage Hunk')
+        map({ 'n', 'v' }, '<leader>ghr', ':Gitsigns reset_hunk<CR>', 'Reset Hunk')
+        map('n', '<leader>ghS', gs.stage_buffer, 'Stage Buffer')
+        map('n', '<leader>ghu', gs.undo_stage_hunk, 'Undo Stage Hunk')
+        map('n', '<leader>ghR', gs.reset_buffer, 'Reset Buffer')
+        map('n', '<leader>ghp', gs.preview_hunk, 'Preview Hunk')
+        map('n', '<leader>ghb', function()
+          gs.blame_line { full = true }
+        end, 'Blame Line')
+        map('n', '<leader>ghd', gs.diffthis, 'Diff This')
+        map('n', '<leader>ghD', function()
+          gs.diffthis '~'
+        end, 'Diff This ~')
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', 'GitSigns Select Hunk')
+      end,
     },
   },
 
@@ -605,12 +635,19 @@ require('lazy').setup {
 
   { -- Autoformat
     'stevearc/conform.nvim',
+    keys = {
+      {
+        -- Customize or remove this keymap to your liking
+        '<leader>f',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
+        end,
+        mode = '',
+        desc = 'Format buffer',
+      },
+    },
     opts = {
       notify_on_error = false,
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
@@ -721,12 +758,22 @@ require('lazy').setup {
     -- change the command in the config to whatever the name of that colorscheme is
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
-    'folke/tokyonight.nvim',
+    'rebelot/kanagawa.nvim',
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
+      -- Override theme for vim-illuminate plugin
+      require('kanagawa').setup {
+        overrides = function(colors)
+          return {
+            IlluminatedWordText = { bg = colors.palette.winterYellow },
+            IlluminatedWordRead = { bg = colors.palette.winterYellow },
+            IlluminatedWordWrite = { bg = colors.palette.winterYellow },
+          }
+        end,
+      }
       -- Load the colorscheme here
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'kanagawa'
 
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
@@ -758,7 +805,7 @@ require('lazy').setup {
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
-      statusline.setup()
+      statusline.setup { use_icons = false }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we disable the section for
@@ -814,7 +861,7 @@ require('lazy').setup {
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
