@@ -146,7 +146,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 8
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -158,8 +158,12 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Show column
 vim.opt.colorcolumn = '120'
 
+-- No wrap
+vim.opt.wrap = false
+
 -- Custom Remaps
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Open netrw:' })
+vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -561,6 +565,12 @@ require('lazy').setup {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        zls = {
+          cmd = {
+            'zls',
+            '--enable-debug-log',
+          },
+        },
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
