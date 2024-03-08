@@ -163,7 +163,7 @@ vim.opt.wrap = false
 
 -- Custom Remaps
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Open netrw:' })
-vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set('i', '<C-c>', '<Esc>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
