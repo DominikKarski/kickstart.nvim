@@ -565,12 +565,6 @@ require('lazy').setup {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        zls = {
-          cmd = {
-            'zls',
-            '--enable-debug-log',
-          },
-        },
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -627,7 +621,13 @@ require('lazy').setup {
         'stylua', -- Used to format lua code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
+      -- Add zls config without installing via Mason
+      require('lspconfig').zls.setup {
+        cmd = {
+          'zls',
+          '--enable-debug-log',
+        },
+      }
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)
