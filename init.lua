@@ -749,6 +749,18 @@ require('lazy').setup({
           'zls',
         },
       }
+      require('lspconfig').gdscript.setup {
+        capabilities = capabilities,
+        on_init = function(client)
+          client.server_capabilities.workspace_configuration = false
+        end,
+        on_attach = function(client, bufnr)
+          vim.bo[bufnr].expandtab = true
+          vim.bo[bufnr].tabstop = 4
+          vim.bo[bufnr].softtabstop = 4
+          vim.bo[bufnr].shiftwidth = 4
+        end,
+      }
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
@@ -1009,7 +1021,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
@@ -1071,4 +1083,12 @@ vim.o.tabstop = 4 -- A TAB character looks like 4 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
 vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
 vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
+
+-- Godot
+local gdproject = io.open(vim.fn.getcwd()..'/project.godot', 'r')
+if gdproject then
+    io.close(gdproject)
+    vim.fn.serverstart('127.0.0.1:6004')
+end
+
 -- CUSTOM END --

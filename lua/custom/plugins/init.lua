@@ -5,17 +5,11 @@
 return {
   'RRethy/vim-illuminate',
   'tpope/vim-fugitive',
-  -- {
-  --   'windwp/nvim-autopairs',
-  --   dependencies = { 'hrsh7th/nvim-cmp' },
-  --   config = function()
-  --     require('nvim-autopairs').setup {}
-  --     -- If you want to automatically add `(` after selecting a function or method
-  --     local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-  --     local cmp = require 'cmp'
-  --     cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-  --   end,
-  -- },
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    opts = {},
+  },
   {
     'nvim-treesitter/nvim-treesitter-context',
     opts = {
@@ -32,18 +26,6 @@ return {
           show_hidden = true,
         },
       }
-    end,
-  },
-  {
-    'Exafunction/codeium.vim',
-    -- stylua: ignore
-    config = function()
-      vim.g.codeium_disable_bindings = 1
-      -- Change '<C-g>' here to any keycode you like.
-      vim.keymap.set('i', '<C-g>', function() return vim.fn['codeium#Accept']() end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-;>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-,>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-x>', function() return vim.fn['codeium#Clear']() end, { expr = true, silent = true })
     end,
   },
   {
