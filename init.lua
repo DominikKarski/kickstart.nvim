@@ -431,7 +431,7 @@ require('lazy').setup({
       -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      vim.keymap.set('n', '<leader>srr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
@@ -516,6 +516,7 @@ require('lazy').setup({
       -- Maps LSP server names between nvim-lspconfig and Mason package names.
       'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+      'mfussenegger/nvim-jdtls',
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
@@ -619,7 +620,7 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -632,6 +633,13 @@ require('lazy').setup({
 
         stylua = {}, -- Used to format Lua code
         ols = {},
+        basedpyright = {},
+        glsl_analyzer = {},
+        gdtoolkit = {},
+        svelte = {},
+        tailwindcss = {},
+        cssls = {},
+        jdtls = {},
 
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
@@ -676,6 +684,28 @@ require('lazy').setup({
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+      -- Add zls config without installing via Mason
+      vim.lsp.config('zls', { cmd = { 'zls' } })
+      vim.lsp.enable 'zls'
+
+      -- Add gdscript config without installing via Mason
+      vim.lsp.config('gdscript', {
+        name = 'godot',
+        cmd = vim.lsp.rpc.connect('127.0.0.1', 6005),
+        filetypes = { 'gdscript' },
+        root_markers = { 'project.godot', '.git' },
+      })
+      vim.lsp.enable 'gdscript'
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'gdscript',
+        callback = function()
+          vim.opt_local.expandtab = false
+          vim.opt_local.tabstop = 4
+          vim.opt_local.shiftwidth = 4
+          vim.opt_local.softtabstop = 4
+        end,
+      })
 
       for name, server in pairs(servers) do
         vim.lsp.config(name, server)
@@ -999,13 +1029,13 @@ vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a T
 vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
 vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
 
--- Godot
-local gdproject = io.open(vim.fn.getcwd() .. '/project.godot', 'r')
-if gdproject then
-  io.close(gdproject)
-  vim.fn.serverstart '127.0.0.1:6004'
-end
+vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
 
-vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+vim.filetype.add {
+  extension = {
+    vs = 'glsl',
+    fs = 'glsl',
+  },
+}
 
 -- CUSTOM END --
